@@ -432,8 +432,10 @@ namespace Blueberry.Desktop.WindowsApp.Bluetooth
                         //    c.CharacteristicProperties.HasFlag(GattCharacteristicProperties.Write))
                         //{
                         if ( (s.Uuid.CompareTo(Guid.Parse("00001800-0000-1000-8000-00805f9b34fb"))==0) &&
-                            (c.Uuid.CompareTo(Guid.Parse("00002a29-0000-1000-8000-00805f9b34fb"))==0))
+                            (c.Uuid.CompareTo(Guid.Parse("00002a00-0000-1000-8000-00805f9b34fb"))==0))
                         {
+                            //Guid.Parse("00002a29-0000-1000-8000-00805f9b34fb" ritorna: "Alpwise"
+                            //Guid.Parse("00002a00-0000-1000-8000-00805f9b34fb" ritorna: "ADI_BLE_HELLOWORLD"
                             //c.ValueChanged += RecieveDataAsync;
                             Readwrite = c;
 
