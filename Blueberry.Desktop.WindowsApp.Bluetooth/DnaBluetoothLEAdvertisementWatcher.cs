@@ -456,17 +456,33 @@ namespace Blueberry.Desktop.WindowsApp.Bluetooth
                     {
                         Characterstics.Add(c);
                         Console.WriteLine("Service UUID="+s.Uuid+" - characteristic: " + c.Uuid);
-                        //Console.WriteLine("Service UUID="+s.Uuid+" - characteristic: " + c.Uuid);
+                        var properties = c.CharacteristicProperties;
+
                         //var cStr = c.CharacteristicProperties.ToString().ToLower();
                         //if (c.CharacteristicProperties.HasFlag(GattCharacteristicProperties.Read) &&
                         //    c.CharacteristicProperties.HasFlag(GattCharacteristicProperties.Write))
                         //{
                         if ((s.Uuid.CompareTo(Guid.Parse("00001800-0000-1000-8000-00805f9b34fb")) == 0) &&
-                        (c.Uuid.CompareTo(Guid.Parse("00002a00-0000-1000-8000-00805f9b34fb")) == 0))
+                        (c.Uuid.CompareTo(Guid.Parse("00002a29-0000-1000-8000-00805f9b34fb")) == 0))
                         {
+                            //Guid.Parse("00001800-0000-1000-8000-00805f9b34fb")
                             //Guid.Parse("00002a29-0000-1000-8000-00805f9b34fb" ritorna: "Alpwise"
                             //Guid.Parse("00002a00-0000-1000-8000-00805f9b34fb" ritorna: "ADI_BLE_HELLOWORLD"
-                            c.ValueChanged += RecieveDataAsync;
+                            Console.WriteLine("is notifiable... " + properties.HasFlag(GattCharacteristicProperties.Notify));
+                            Console.WriteLine("is readable... " + properties.HasFlag(GattCharacteristicProperties.Read));
+                            Console.WriteLine("is writeable... "+properties.HasFlag(GattCharacteristicProperties.Write));
+
+                            //if (properties.HasFlag(GattCharacteristicProperties.Notify))
+                            //{
+                            //    var status = await c.WriteClientCharacteristicConfigurationDescriptorAsync(
+                            //        GattClientCharacteristicConfigurationDescriptorValue.Notify);
+                            //    if (status == GattCommunicationStatus.Success)
+                            //    {
+                            //        // Server has been informed of clients interest.
+                            //        c.ValueChanged += RecieveDataAsync;
+                            //    }
+                            //    Console.WriteLine("Property is notifiable... add RecieveDataAsync()");
+                            //}
                             Readwrite = c;
 
                             await ReadTheValueFromCharacteristicAsync(c);
@@ -474,7 +490,7 @@ namespace Blueberry.Desktop.WindowsApp.Bluetooth
 
                             //var cosaLeggi = await Readwrite.ReadValueAsync();
                             //Console.WriteLine("Charac read/write: " + cosaLeggi.ToString());
-                            Console.WriteLine("Charac read/write: found");
+                            Console.WriteLine("Characteristic match!");
                         }
                         //Console.WriteLine("Found read/write characteristic");
                         //}
