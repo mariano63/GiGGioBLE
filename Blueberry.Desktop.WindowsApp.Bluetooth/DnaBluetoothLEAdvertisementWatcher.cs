@@ -408,6 +408,36 @@ namespace Blueberry.Desktop.WindowsApp.Bluetooth
             receivedString += reader.ReadString(bufferLength) + "\n";
             Console.WriteLine("Recieved Message: " + receivedString);
         }
+
+        private static async Task WriteTheValueFromCharacteristicAsync(GattCharacteristic c, string st)
+        {
+            var writer = new DataWriter();
+            var bytes = System.Text.Encoding.ASCII.GetBytes(st);
+            writer.WriteBytes(bytes);
+            var result = await c.WriteValueAsync(writer.DetachBuffer());
+            Console.WriteLine("Write on characteristic :" + bytes+" ");
+            if (result == GattCommunicationStatus.Success)
+            {
+                // Successfully wrote to device
+                Console.WriteLine("Success!");
+            } else
+            {
+                Console.WriteLine("Failed!");
+            }
+        }
+        private static async Task ReadTheValueFromCharacteristicAsync(GattCharacteristic c)
+        {
+            var resultt = await c.ReadValueAsync();
+            if (resultt.Status == GattCommunicationStatus.Success)
+            {
+                var reader = DataReader.FromBuffer(resultt.Value);
+                var input = new byte[reader.UnconsumedBufferLength];
+                reader.ReadBytes(input);
+                // Utilize the data as needed
+                var res = System.Text.Encoding.UTF8.GetString(input);
+                Console.WriteLine("data rcv:" + res);
+            }
+        }
         private static List<GattCharacteristic> Characterstics = new List<GattCharacteristic> { };
 
         private static GattCharacteristic Readwrite;
@@ -431,29 +461,16 @@ namespace Blueberry.Desktop.WindowsApp.Bluetooth
                         //if (c.CharacteristicProperties.HasFlag(GattCharacteristicProperties.Read) &&
                         //    c.CharacteristicProperties.HasFlag(GattCharacteristicProperties.Write))
                         //{
-                        if ( (s.Uuid.CompareTo(Guid.Parse("00001800-0000-1000-8000-00805f9b34fb"))==0) &&
-                            (c.Uuid.CompareTo(Guid.Parse("00002a00-0000-1000-8000-00805f9b34fb"))==0))
+                        if ((s.Uuid.CompareTo(Guid.Parse("00001800-0000-1000-8000-00805f9b34fb")) == 0) &&
+                        (c.Uuid.CompareTo(Guid.Parse("00002a00-0000-1000-8000-00805f9b34fb")) == 0))
                         {
                             //Guid.Parse("00002a29-0000-1000-8000-00805f9b34fb" ritorna: "Alpwise"
                             //Guid.Parse("00002a00-0000-1000-8000-00805f9b34fb" ritorna: "ADI_BLE_HELLOWORLD"
-                            //c.ValueChanged += RecieveDataAsync;
+                            c.ValueChanged += RecieveDataAsync;
                             Readwrite = c;
 
-                            var resultt = await c.ReadValueAsync();
-                            if (resultt.Status == GattCommunicationStatus.Success)
-                            {
-                                var reader = DataReader.FromBuffer(resultt.Value);
-                                var input = new byte[reader.UnconsumedBufferLength];
-                                reader.ReadBytes(input);
-                                // Utilize the data as needed
-                                var res= System.Text.Encoding.UTF8.GetString(input);
-                                //foreach (var byt in input)
-                                //{
-                                //    Console.Write(", "+byt+", " );
-                                //}
-                                Console.WriteLine("data rcv:" + res);
-                            }
-
+                            await ReadTheValueFromCharacteristicAsync(c);
+                            //await WriteTheValueFromCharacteristicAsync(c);
 
                             //var cosaLeggi = await Readwrite.ReadValueAsync();
                             //Console.WriteLine("Charac read/write: " + cosaLeggi.ToString());
